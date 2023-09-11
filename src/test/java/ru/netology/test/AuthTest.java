@@ -64,7 +64,7 @@ public class AuthTest {
     @Test
     @DisplayName("Невалидные логин и пароль")
     void shouldNotifyThatLoginIsIncorrect() {
-        val user = DataGenerator.Registration.registerUser("en-US", "active");
+        DataGenerator.Registration.registerUser("en-US", "active");
         $("span[data-test-id='login'] input").setValue("wronguser");
         $("span[data-test-id='password'] input").setValue("wrongpassword");
 
