@@ -1,21 +1,20 @@
-package ru.netology.data ;
+package ru.netology.data;
 
 import com.github.javafaker.Faker;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
-import ru.netology.model.TestUser;
+import ru.netology.test.TestUser;
 
 import java.util.Locale;
 
 import static io.restassured.RestAssured.given;
-import static sun.security.util.KnownOIDs.ContentType;
 
 public class DataGenerator {
     private DataGenerator() {}
     public static class Registration {
-        private static RequestSpecification requestSpec = new RequestSpecBuilder()
+        private static final RequestSpecification requestSpec = new RequestSpecBuilder()
                 .setBaseUri("http://localhost")
                 .setPort(9999)
                 .setAccept(ContentType.JSON)
