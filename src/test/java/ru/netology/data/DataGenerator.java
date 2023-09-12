@@ -5,46 +5,73 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
-import ru.netology.test.TestUser;
+import lombok.Value;
 
 import java.util.Locale;
 
 import static io.restassured.RestAssured.given;
-import static sun.security.util.KnownOIDs.ContentType;
 
 public class DataGenerator {
-    private DataGenerator() {}
+    private static final RequestSpecification requestSpec = new RequestSpecBuilder()
+            .setBaseUri("http://localhost")
+            .setPort(9999)
+            .setAccept(ContentType.JSON)
+            .setContentType(ContentType.JSON)
+            .log(LogDetail.ALL)
+            .build();
+    private static final Faker faker = new Faker(new Locale("en"));
+
+    private DataGenerator() {
+    }
+
+    private static void sendRequest(RegistrationDto user) {
+        // TODO: отправить запрос на указанный в требованиях path, передав в body запроса объект user
+        //  и не забудьте передать подготовленную спецификацию requestSpec.
+        //  Пример реализации метода показан в условии к задаче.
+        given()
+                .spec(requestSpec)
+                .body(new RegistrationDto(
+                        user.getLogin(),
+                        user.getPassword(),
+                        user.getStatus()))
+                .when()
+                .post("/api/system/users")
+                .then()
+                .statusCode(200);
+
+    }
+
+    public static String getRandomLogin() {
+        String login = faker.name().firstName();
+        return login;
+    }
+
+    public static String getRandomPassword() {
+        String password = faker.internet().password();
+        return password;
+    }
+
     public static class Registration {
-        private static final RequestSpecification requestSpec = new RequestSpecBuilder()
-                .setBaseUri("http://localhost")
-                .setPort(9999)
-                .setAccept(ContentType.JSON)
-                .setContentType(ContentType.JSON)
-                .log(LogDetail.ALL)
-                .build();
-
-        private Registration() {}
-
-        private static TestUser generateUser(String locale, String status) {
-            Faker faker = new Faker(new Locale(locale));
-
-            return new TestUser(faker.name().username(),
-                    faker.internet().password(),
-                    status
-            );
+        private Registration() {
         }
 
-        public static TestUser registerUser(String locale, String status) {
-            TestUser user = generateUser(locale, status);
-            // сам запрос
-            given() // "дано"
-                    .spec(requestSpec) // указываем, какую спецификацию используем
-                    .body(user) // передаём в теле объект, который будет преобразован в JSON
-                    .when() // "когда"
-                    .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
-                    .then() // "тогда ожидаем"
-                    .statusCode(200); // код 200 OK
-            return user;
+        public static RegistrationDto getUser(String status) {
+            return new RegistrationDto(getRandomLogin(), getRandomPassword(), status);
+
         }
+
+        public static RegistrationDto getRegisteredUser(String status) {
+            var getRegisteredUser = getUser(status);
+            sendRequest(getRegisteredUser);
+            return getRegisteredUser;
+        }
+    }
+
+    @Value
+    public static class RegistrationDto {
+        String login;
+        String password;
+        String status;
+
     }
 }
