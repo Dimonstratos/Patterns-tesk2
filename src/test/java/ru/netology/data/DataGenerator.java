@@ -10,6 +10,7 @@ import ru.netology.test.TestUser;
 import java.util.Locale;
 
 import static io.restassured.RestAssured.given;
+import static sun.security.util.KnownOIDs.ContentType;
 
 public class DataGenerator {
     private DataGenerator() {}

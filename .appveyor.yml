@@ -2,17 +2,16 @@ image: Ubuntu
 
 branches:
   only:
-    - main  # ветка git
+    - main
 
-build: off  # будем использовать свой скрипт сборки
+build: off
 
 install:
-  # запускаем SUT (запоминаем информацию о процессе в переменной $App)
   - ps: $App = Start-Process -FilePath java -ArgumentList "-jar ./artifacts/app-ibank.jar -P:profile=test" -PassThru
 
 build_script:
   - ps: chmod +x ./gradlew
-  - ps: ./gradlew test --info "-Dselenide.headless=true"  # стартуем Selenide в Headless-режиме
+  - ps: ./gradlew test --info "-Dselenide.headless=true"
 
 on_finish:
-  - ps: Stop-Process -Id $App.Id  # останавливаем SUT
+  - ps: Stop-Process -Id $App.Id
